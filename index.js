@@ -43,16 +43,31 @@ app.post('/api/referral', referralValidation, validate, async (req, res) => {
   try {
     const { userID, referrerName, referrerEmail } = req.body;
 
-    const referral = await prisma.referral.create({
-      data: { userID, referrerName, referrerEmail },
+    // Check for existing referral
+    const existingReferral = await prisma.referral.findFirst({
+      where: {
+        AND: [
+          { userID: userID },
+          { referrerEmail: referrerEmail }
+        ]
+      }
     });
 
-    // Send confirmation email
-    await sendConfirmationEmail(referrerEmail, referrerName);
+    let referral;
+    if (!existingReferral) {
+      referral = await prisma.referral.create({
+        data: { userID, referrerName, referrerEmail },
+      });
+    } else {
+      referral = existingReferral;
+    }
 
+    // Send confirmation email regardless of whether referral exists
+    await sendConfirmationEmail(referrerEmail, referrerName);
+    
     res.status(201).json(referral);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create referral' });
+    res.status(500).json({ error: 'Failed to process referral' });
   }
 });
 
