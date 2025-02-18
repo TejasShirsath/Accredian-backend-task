@@ -2,6 +2,7 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const { sendConfirmationEmail } = require('./utils/emailService');
+const { body, validationResult } = require('express-validator');
 
 const prisma = new PrismaClient();
 const app = express();
@@ -20,19 +21,27 @@ async function testConnection() {
   }
 }
 
-// Create new referral
-app.post('/api/referral', async (req, res) => {
+const referralValidation = [
+  body('userID').notEmpty().withMessage('User ID is required'),
+  body('referrerName').notEmpty().withMessage('Referrer name is required'),
+  body('referrerEmail')
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Invalid email format'),
+];
+
+// Middleware to check validation results
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  next();
+};
+
+// API endpoint 1 : Create new referral [POST]
+app.post('/api/referral', referralValidation, validate, async (req, res) => {
   try {
     const { userID, referrerName, referrerEmail } = req.body;
-
-    // Validation
-    if (!userID || !referrerName || !referrerEmail) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(referrerEmail)) {
-      return res.status(400).json({ error: 'Invalid email format' });
-    }
 
     const referral = await prisma.referral.create({
       data: { userID, referrerName, referrerEmail },
@@ -47,6 +56,42 @@ app.post('/api/referral', async (req, res) => {
   }
 });
 
+// API endpoint 2 : Get all referrals [GET] 
+app.get('/api/referrals', async (req, res) => {
+    try {
+      const referrals = await prisma.referral.findMany();
+      res.json(referrals);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch referrals' });
+    }
+  });
+  
+// API endpoint 3 : Get referrals by userID [GET]
+app.get('/api/referral/user/:userID', async (req, res) => {
+    try {
+        const referrals = await prisma.referral.findMany({
+            where: { userID: req.params.userID },
+        });
+        if (referrals.length === 0) return res.status(404).json({ error: 'No referrals found for this user' });
+        res.json(referrals);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch referrals' });
+    }
+});
+  
+// API endpoint 4 : Update referral status [PUT]
+  app.put('/api/referral/:id', async (req, res) => {
+    try {
+      const { status } = req.body;
+      const referral = await prisma.referral.update({
+        where: { id: parseInt(req.params.id) },
+        data: { status },
+      });
+      res.json(referral);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update referral' });
+    }
+  });
 
 
 const PORT = process.env.PORT || 5000;
