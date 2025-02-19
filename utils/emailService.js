@@ -81,7 +81,7 @@ const sendConfirmationEmail = async (email, refereeName, referrerName, userID) =
                class="button accept">
                ✅ Accept Invitation
             </a>
-            
+            <br><br>
             <a href="${rejectUrl}" 
                class="button reject">
                ❌ Decline
