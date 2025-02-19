@@ -8,11 +8,18 @@ const { body, validationResult } = require('express-validator');
 const prisma = new PrismaClient();
 const app = express();
 
+// Updated CORS configuration
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, process.env.BACKEND_URL],
+  origin: ['https://accredian-frontend-task-one-tau.vercel.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
 app.use(express.json());
+
+// Add a pre-flight handler for all routes
+app.options('*', cors());
 
 // Test database connection
 async function testConnection() {
