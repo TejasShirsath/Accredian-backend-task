@@ -10,8 +10,8 @@ datasource db {
 model Referral {
   id            Int      @id @default(autoincrement())
   userID        String   
-  referrerName  String
-  referrerEmail String
+  refereeName   String   // Changed from referrerName
+  refereeEmail  String   // Changed from referrerEmail
   status        Status   @default(PENDING)
   createdAt     DateTime @default(now())
 
