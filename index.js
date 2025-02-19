@@ -154,9 +154,6 @@ app.get('/referral/accept', async (req, res) => {
             <p>Thank you for accepting the referral. You can close this window now.</p>
             <script>
               console.log('Referral accepted successfully');
-              setTimeout(() => {
-                window.location.href = '${process.env.FRONTEND_URL}/referrals';
-              }, 2000);
             </script>
           </div>
         </body>
