@@ -11,7 +11,7 @@
     "start": "node index.js",
     "build": "prisma generate",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate"
+    "vercel-build": "prisma generate && prisma db push"
   },
   "author": "",
   "license": "ISC",
