@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "build": "npm install"
+    "build": "prisma generate && npm install",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma db push"
   },
   
   "author": "",
