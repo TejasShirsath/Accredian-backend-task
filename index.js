@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
@@ -8,7 +9,7 @@ const prisma = new PrismaClient();
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5000'],
+  origin: [process.env.FRONTEND_URL, process.env.BACKEND_URL],
   credentials: true
 }));
 app.use(express.json());
@@ -145,8 +146,10 @@ app.get('/referral/accept', async (req, res) => {
             <h1 style="color: #28a745;">✅ Referral Accepted!</h1>
             <p>Thank you for accepting the referral. You can close this window now.</p>
             <script>
-              // Log success in console
               console.log('Referral accepted successfully');
+              setTimeout(() => {
+                window.location.href = '${process.env.FRONTEND_URL}/referrals';
+              }, 2000);
             </script>
           </div>
         </body>

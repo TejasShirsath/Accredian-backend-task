@@ -8,18 +8,13 @@ datasource db {
 }
 
 model Referral {
-  id            Int      @id @default(autoincrement())
-  userID        String   
-  refereeName   String   // Changed from referrerName
-  refereeEmail  String   // Changed from referrerEmail
-  status        Status   @default(PENDING)
-  createdAt     DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  userID       String
+  refereeName  String
+  refereeEmail String
+  status       String   @default("PENDING")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  @@map("referrals")
-}
-
-enum Status {
-  PENDING
-  ACCEPTED
-  REJECTED
+  @@index([userID, refereeEmail])
 }

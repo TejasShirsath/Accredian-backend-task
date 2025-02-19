@@ -9,10 +9,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendConfirmationEmail = async (email, refereeName, referrerName, userID) => {
-  // Change URLs to use port 5000 directly
-  const acceptUrl = `http://localhost:5000/referral/accept?userID=${encodeURIComponent(userID)}&email=${encodeURIComponent(email)}`;
-  const rejectUrl = `http://localhost:5000/referral/reject?userID=${encodeURIComponent(userID)}&email=${encodeURIComponent(email)}`;
-  
+  const acceptUrl = `${process.env.BACKEND_URL}/referral/accept?userID=${encodeURIComponent(userID)}&email=${encodeURIComponent(email)}`;
+  const rejectUrl = `${process.env.BACKEND_URL}/referral/reject?userID=${encodeURIComponent(userID)}&email=${encodeURIComponent(email)}`;
 
   const emailTemplate = `
     <!DOCTYPE html>
@@ -66,7 +64,7 @@ const sendConfirmationEmail = async (email, refereeName, referrerName, userID) =
           <p>Hey ${refereeName},</p>
           <p>I hope you're doing great! 🚀</p>
           
-          <p>I wanted to personally reach out because <strong>${referrerName}</strong> thought you'd be a perfect fit for this amazing opportunity. They've referred you to Accredian, where you can unlock exclusive rewards and benefits!</p>
+          <p>I wanted to personally reach out because <strong>${referrerName}</strong> thought you'd be a perfect fit for this amazing opportunity. They've referred you to ${process.env.APP_NAME}, where you can unlock exclusive rewards and benefits!</p>
           
           <div class="benefits">
             <div class="benefit-item">Access to premium features and exclusive content</div>
@@ -92,7 +90,7 @@ const sendConfirmationEmail = async (email, refereeName, referrerName, userID) =
         </div>
         
         <div class="footer">
-          <p>Cheers,<br>Accredian Team (TESTING)</p>
+          <p>Cheers,<br>${process.env.APP_NAME} Team</p>
         </div>
       </div>
     </body>
